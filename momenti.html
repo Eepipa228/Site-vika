@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Наши моменты</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: url('images/fon.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 240, 245, 0.3);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-title {
+            font-size: 4rem;
+            font-weight: 400;
+            color: #ad6d7e;
+            text-shadow: 3px 3px 0 #fbc1cb, 6px 6px 0 rgba(255, 220, 230, 0.7);
+            border-bottom: 5px dotted #ffb6c1;
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Brush Script MT', cursive;
+            transform: rotate(-0.8deg);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sub {
+            color: #b9878a;
+            font-style: italic;
+            font-size: 1.5rem;
+            background: rgba(255, 240, 243, 0.9);
+            padding: 0.6rem 3rem;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px #ffd9e2;
+            margin-bottom: 3rem;
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(2px);
+        }
+
+        .main-cards {
+            max-width: 1400px;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4rem 3rem;
+            margin: 2rem auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fan-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 500px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fan-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fan-container {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .main-photo {
+            position: relative;
+            z-index: 10;
+            background-color: white;
+            padding: 20px 20px 30px 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid #ece3d5;
+            transform: rotate(var(--main-rot, 0deg));
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: fit-content;
+            line-height: 0;
+            cursor: pointer;
+        }
+
+        .main-photo:hover {
+            transform: rotate(var(--main-rot, 0deg)) scale(1.02);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .main-photo:hover ~ .fan-photo,
+        .fan-container:hover .fan-photo {
+            filter: brightness(1.1) drop-shadow(0 0 5px rgba(255, 182, 193, 0.5));
+        }
+
+        .main-photo img, .main-photo video {
+            display: block;
+            width: 320px;
+            height: 240px;
+            object-fit: cover;
+            border: 1px solid #d9c9b5;
+            pointer-events: none;
+        }
+        
+        .main-photo video {
+            pointer-events: auto;
+            background: #f0e4d6;
+        }
+
+        .fan-photo {
+            position: absolute;
+            background-color: white;
+            padding: 5px 5px 10px 5px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+            border: 1px solid #d9c9b5;
+            width: fit-content;
+            line-height: 0;
+            transition: all 0.3s ease;
+            z-index: 5;
+            cursor: pointer;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        
+        .fan-photo:hover {
+            transform: scale(1.1) rotate(0deg) !important;
+            z-index: 20;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .fan-photo img, .fan-photo .video-preview {
+            display: block;
+            width: 100px;
+            height: 75px;
+            object-fit: cover;
+            border: 1px solid #c0aa8e;
+        }
+        
+        .fan-photo .video-preview {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .main-label {
+            background-color: #ffe4ec;
+            border: 6px double #ff99bb;
+            border-radius: 30px 10px 30px 10px;
+            padding: 16px 28px;
+            font-size: 1.5rem;
+            color: #8f4b5c;
+            text-align: center;
+            font-family: 'Segoe Script', cursive;
+            box-shadow: 0 10px 15px rgba(255, 150, 180, 0.3);
+            transform: rotate(var(--label-rot, 1deg));
+            max-width: 400px;
+            margin-top: 10px;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #fff9f0;
+            padding: 2.5rem;
+            border-radius: 40px 20px 40px 20px;
+            border: 8px double #ff99bb;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-content h2 {
+            font-family: 'Brush Script MT', cursive;
+            color: #ad6d7e;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px dotted #ffb6c1;
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.8rem;
+            font-size: 2.5rem;
+            color: #ad6d7e;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #ffe4ec;
+            border: 2px solid #ff99bb;
+            line-height: 1;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #ff99bb;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .grid-item {
+            background: white;
+            padding: 10px 10px 20px 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transform: rotate(var(--rot, 0deg));
+            transition: transform 0.2s;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .grid-item:hover {
+            transform: scale(1.05) rotate(var(--rot, 0deg));
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .grid-item img, .grid-item video {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border: 1px solid #d9c9b5;
+            pointer-events: none;
+        }
+        
+        .grid-item video {
+            background: #f0e4d6;
+        }
+
+        .grid-item .caption {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #8f4b5c;
+            font-style: italic;
+        }
+
+        /* Стили для увеличенного просмотра */
+        .enlarge-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            cursor: pointer;
+        }
+
+        .enlarge-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .enlarge-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .enlarge-content img, .enlarge-content video {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 5px solid white;
+        }
+
+        .enlarge-content video {
+            background: black;
+        }
+
+        .enlarge-close {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            font-size: 3rem;
+            color: white;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 105, 180, 0.8);
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .enlarge-close:hover {
+            background: #ff1493;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 700px) {
+            .enlarge-close {
+                top: -30px;
+                right: 0;
+            }
+        }
+
+        .instructions {
+            background: rgba(255, 240, 245, 0.9);
+            border: 3px dashed #ff99bb;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 1000px;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(2px);
+            font-family: Arial, sans-serif;
+        }
+        
+        .instructions h3 {
+            color: #ad6d7e;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-family: 'Brush Script MT', cursive;
+        }
+        
+        .instructions p {
+            color: #8f4b5c;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            line-height: 1.5;
+        }
+        
+        .instructions code {
+            background: #fff0f3;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            color: #d44e6c;
+            font-size: 1rem;
+        }
+        
+        .instructions .note {
+            background: #ffd9e2;
+            padding: 1rem;
+            border-radius: 15px;
+            margin-top: 1rem;
+        }
+
+        .footer-note {
+            margin-top: 3rem;
+            opacity: 0.8;
+            font-size: 1.2rem;
+            color: #9f7280;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 240, 245, 0.7);
+            padding: 0.5rem 2rem;
+            border-radius: 40px;
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+            backdrop-filter: blur(2px);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .back-button a {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #ff69b4;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-family: Arial, sans-serif;
+        }
+
+        .back-button a:hover {
+            background-color: #ff1493;
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.5);
+        }
+
+        .back-button a:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 1100px) {
+            .main-cards {
+                gap: 3rem;
+            }
+            .fan-card {
+                width: 450px;
+            }
+            .main-photo img, .main-photo video {
+                width: 280px;
+                height: 210px;
+            }
+            .fan-photo img, .fan-photo .video-preview {
+                width: 80px;
+                height: 60px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .fan-card {
+                width: 100%;
+                max-width: 400px;
+            }
+            .fan-container {
+                height: 400px;
+            }
+            .modal-content {
+                padding: 1.5rem;
+            }
+            .back-button a {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            .page-title {
+                font-size: 3rem;
+            }
+            .sub {
+                font-size: 1.2rem;
+                padding: 0.4rem 1.5rem;
+            }
+            .instructions {
+                padding: 1rem;
+            }
+            .fan-photo img, .fan-photo .video-preview {
+                width: 70px;
+                height: 52px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-button">
+        <a href="#" onclick="history.back(); return false;">← Назад</a>
+    </div>
+
+    <h1 class="page-title"> Наши моменты! 💖</h1>
+
+    <div class="main-cards" id="mainCards">
+        <!-- КАРТОЧКА 1: Ефремов (левая) -->
+        <div class="fan-card" data-main-rot="-3deg" data-label-rot="2deg" data-fan-direction="left">
+            <div class="fan-container" id="fan1">
+                <div class="main-photo" style="--main-rot: -3deg;">
+                    <img src="images/Efremov/taN6FqWF5azVb_sk1cSsgZZMOejpWqL9C4pR0fra9Swv96exddsO6r1OwBUNHQzGGIVxaI102-zer0BlviuNVYSt.jpg" alt="описание">
+                </div>
+            </div>
+            <div class="main-label" style="--label-rot: 2deg;">
+                Поездка в Ефремов!!
+            </div>
+        </div>
+
+        <!-- КАРТОЧКА 2: Алексин (правая) - 7 фото -->
+        <div class="fan-card" data-main-rot="4deg" data-label-rot="-1.5deg" data-fan-direction="right">
+            <div class="fan-container" id="fan2">
+                <div class="main-photo" style="--main-rot: 4deg;">
+                    <img src="images/Alexin/Nj1gOSNSrczW8sJsOnQdZXmIwSqCfp5oeiDMfExyJUBvhC3r6iWxCedaxsX6SOKQxkpOVJxwL1d_5us2xbNDaULf.jpg" alt="Поездка в Алексин">
+                </div>
+            </div>
+            <div class="main-label" style="--label-rot: -1.5deg;">
+                Поездка в Алексин!!
+            </div>
+        </div>
+
+        <!-- КАРТОЧКА 3: Кисловодск (левая) - 8 фото -->
+        <div class="fan-card" data-main-rot="-5deg" data-label-rot="3deg" data-fan-direction="left">
+            <div class="fan-container" id="fan3">
+                <div class="main-photo" style="--main-rot: -5deg;">
+                    <img src="images/Kislovodsk/IZLYTq5fHixkBZRZocNlYkmr_Sg34rfdvQQuKMQC2GkHPWo6mcqF13IoZjPAD72QRK2av6RQhxypDBUiF89Dpz23.jpg" alt="Поездка в Калининград">
+                </div>
+            </div>
+            <div class="main-label" style="--label-rot: 3deg;">
+                Поездка в Кисловодск!!
+            </div>
+        </div>
+
+        <!-- КАРТОЧКА 4: Московский зоопарк (правая) - 8 фото -->
+        <div class="fan-card" data-main-rot="6deg" data-label-rot="-2deg" data-fan-direction="right">
+            <div class="fan-container" id="fan4">
+                <div class="main-photo" style="--main-rot: 6deg;">
+                    <img src="images/Zoopark/iwICYQVPe-YM4lEOt1TjzzVIYPnny9AyBg44Mr8GyzNuHa2gpg3EwCl8MbfscsEZLSp43uNQgjE7xDa1sbUSbEFs.jpg" alt="Московский зоопарк">
+                </div>
+            </div>
+            <div class="main-label" style="--label-rot: -2deg;">
+                Поход в Московский зоопарк!!
+            </div>
+        </div>
+
+        <!-- КАРТОЧКА 5: Прогулки (левая) - 6 фото -->
+        <div class="fan-card" data-main-rot="-4deg" data-label-rot="1.5deg" data-fan-direction="left">
+            <div class="fan-container" id="fan5">
+                <div class="main-photo" style="--main-rot: -4deg;">
+                    <img src="images/Progulki/bVWG2_65dBwv3kkQOCL6zZxvGpLmTQ3mRXWiP0Hu4NrkkJ18BIe7WVZpRz9i7vnXrOIrrqBokowLEk-KCmJ9KHeh.jpg" alt="Прогулка по ВДНХ">
+                </div>
+            </div>
+            <div class="main-label" style="--label-rot: 1.5deg;">
+                Наши прогулки, жду когда будет тепло чтобы снова так гулять!!
+            </div>
+        </div>
+
+        <!-- КАРТОЧКА 6: Просто наши моменты (правая) - 8 фото -->
+        <div class="fan-card" data-main-rot="5deg" data-label-rot="-2deg" data-fan-direction="right">
+            <div class="fan-container" id="fan6">
+                <div class="main-photo" style="--main-rot: 5deg;">
+                    <img src="images/Prostomomenti/7p_QQf43kr22dik5fpR7WpeFBUFPEWs5ltWGiVf5f054qRcqfPQnhFZ2XT3KTbM6gcaGuOuVSXMxkiMkVyQWdiGd.jpg">
+                </div>
+            </div>
+            <div class="main-label" style="--label-rot: -2deg;">
+                Просто наши моменты!!
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <span class="modal-close" id="modalClose">&times;</span>
+            <h2 id="modalTitle">Фотографии из веера</h2>
+            <div class="photo-grid" id="photoGrid"></div>
+        </div>
+    </div>
+
+    <!-- Окно для увеличенного просмотра -->
+    <div class="enlarge-overlay" id="enlargeOverlay">
+        <div class="enlarge-content" id="enlargeContent">
+            <span class="enlarge-close" id="enlargeClose">&times;</span>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        ✦  Нажми на главное фото — увидишь все снимки крупно  ✦
+    </div>
+
+    <script>
+        (function() {
+            
+            const fanImagesData = {
+                fan1: [ // Поездка в Ефремов
+                    { url: 'images/Efremov/taN6FqWF5azVb_sk1cSsgZZMOejpWqL9C4pR0fra9Swv96exddsO6r1OwBUNHQzGGIVxaI102-zer0BlviuNVYSt.jpg', caption: 'Самая грозная в Ефремове' },
+                    { url: 'images/Efremov/gbRPsCUsl6K1S-QTe1DhFTDtU1fRxcLLqNMQxAJcPSUG3drOPta9TXiIeKcurOo7El4sOKduyliu6evgvNIH2YZA.jpg', caption: 'Викулька Худождник' },
+                    { url: 'images/Efremov/MxAwz5SDbLMMIAy1ovIEhCKs5ZN_XMlNnNjGKdF1WGQGPa6gST5jeY69v8OCGM66synge21tOwAs84UeRon_XNDO.jpg', caption: 'Отходим от поездки' },
+                    { url: 'images/Efremov/BTz8bk0dwJ9jNyUaVoz-kFsBhPXY4-O00lf2Bb4b9jJmR7Oivz8qwhXPfvuE499MsjddlttWKk0PTpUcDVDmBmvP.jpg', caption: 'Еще больше творчества Викульки' },
+                    { url: 'images/Efremov/qKLRt6cZxE6N8f151kZjhto7w1_8zd1sEWUUFE2UWoczdBMCfIDjEtwFX1ovDqw1MTfBKpIwczzOa5wSVCcLDJs2.jpg', caption: 'Мою попу не могла не сфоткать' },
+                    { url: 'images/Efremov/q3gBtrf59n7GZyNYQb_Ig5c7T74n3LqBtULIIkXtx046MU9qrw1h8kabj6sUAa21s8AKOeSuxQ0zuVOvC8W45wdN.jpg', caption: 'Милашик мой на площади' }
+                ],
+                fan2: [ // Поездка в Алексин 
+                    { url: 'images/Alexin/seM7DhQdlO_k9IS-Ozv0i8ND3cUu0bdloOzL7wZK34KvMFfSGQrIkQN75_WNq58s1Q7wNX9LEKtsfSwvBaJjZmQx.jpg', caption: 'Эстетик Эстетик' },
+                    { url: 'images/Alexin/POYsPkCh0FXE7_tbocbs-UeIcN1yngYVliGWf3yQt-OJwr_2xhKvBH-weE0BWDgTfcBWg-cEZvHq1MSLQ9fM7oF2.jpg', caption: 'Ну секс' },
+                    { url: 'images/Alexin/Nj1gOSNSrczW8sJsOnQdZXmIwSqCfp5oeiDMfExyJUBvhC3r6iWxCedaxsX6SOKQxkpOVJxwL1d_5us2xbNDaULf.jpg', caption: 'Ну мы!' },
+                    { url: 'images/Alexin/fOz-0YgGJvTsZXAxj2bKMSGdb9CbfXK26GZNa7aaEuYlIAbT5sZ5kGOBl4dTHeCVUdE8g1TQ-yUM_mKgUGAEQ9cx.jpg', caption: 'Снова попу мою сфоткала' },
+                    { url: 'images/Alexin/4eim6Kr0Hv_3B4v14RPPyIvTLo5lkTY0Fx2-VlEmkxT8Vn7ul5MjyxnVWo6o1Jjqw3-Q3yIlrKkcImX9-BVLcq_G.jpg', caption: 'Это фото мне просто очень нравится!' },
+                    { url: 'images/Alexin/scSyjH6dYibd6GI9a_x3EpAuw8yWzLMO6Sp8NjZojBBmbA0S1qdUzjd7oCCOObFk24wHP1I--Au2E7gxWANKsZ6V.jpg', caption: 'Свернулась так это вообще, милота!'},
+		    { url: 'images/Alexin/QbX6_uVwx6nQ6LMGQ1OIaDWxv6kKpa8RXegu24aw7Qbhzj7isKACXck06Srh_OkbcGYobetb-7pFizn5I3xKGTfQ.jpg', caption: 'Вайбики мягко говоря прям есть!'},
+                    { url: 'images/Alexin/12331879959140.mp4', caption: 'Получается я все таки какашка', isVideo: true }
+                ],
+                fan3: [ // Поездка в Кисловодск 
+                    { url: 'images/Kislovodsk/IZLYTq5fHixkBZRZocNlYkmr_Sg34rfdvQQuKMQC2GkHPWo6mcqF13IoZjPAD72QRK2av6RQhxypDBUiF89Dpz23.jpg', caption: 'Милашик ты у меня!' },
+                    { url: 'images/Kislovodsk/12329484094052.mp4', caption: 'Я и забыл что они настолько громкие', isVideo: true },
+                    { url: 'images/Kislovodsk/pJ2t_e0mxS7BPPXwR2lMqOrN_vEz7VVVObq0w_PEHaGWrHfLprW5C8AhMTtKJkGAoluBPHtOYyVojP8kORD7PZmN.jpg', caption: 'Дэ мой размерчик именно хахаха' },
+                    { url: 'images/Kislovodsk/6WOZy1WPzI8UHlFn_2dT2w0kGPHTAgXS37Z2KRJ07VWlAx8R4_i0McNpZ21eBZxfFsFzN8QQslYR46eaI7_KJvkD.jpg', caption: 'Камни 10/10 собирали, я в детсво вернулся!' },
+                    { url: 'images/Kislovodsk/fN31EGJZQijuFZHxEMXzWqyJ86PWmkK3a2Wz0_Ucg7s4gx4BFxy8hIWop7uWqvFFksNDOpMz7cEvG-Uf2iAuNMsQ.jpg', caption: 'Лучший амбассадор я считаю' },
+                    { url: 'images/Kislovodsk/12329925806692.mp4', caption: 'Ехали и туда и обратно самые лучшие поездкк в моей жизни!', isVideo: true },
+                    { url: 'images/Kislovodsk/Xk4xIrBWrCwphEeuT89YcDe-7sgjBzWKO-fM-VKVhoo0RnjNWZdj6Yt_4EjlbEP5w3PzHBoc-DbbMQZV1CXqL29L.jpg', caption: 'Артем забавно получился та и вся фотка улет', },
+                    { url: 'images/Kislovodsk/12331849288292.mp4', caption: 'Помню как кормила их всех', isVideo: true }
+                ],
+                fan4: [ // Московский зоопарк 
+                    { url: 'images/Zoopark/12330476374628.mp4', caption: 'Себя нашел', isVideo: true },
+                    { url: 'images/Zoopark/12329578793572.mp4', caption: 'Ну они милашики просто!', isVideo: true },
+                    { url: 'images/Zoopark/iwICYQVPe-YM4lEOt1TjzzVIYPnny9AyBg44Mr8GyzNuHa2gpg3EwCl8MbfscsEZLSp43uNQgjE7xDa1sbUSbEFs.jpg', caption: 'Это фото мне тоже просто очень нравится!' },
+                    { url: 'images/Zoopark/greVB3BlaMrkRJ-TwvJsQsWK_sAMvTXzR1pPuGdUt5wGUI1ybZDJ2QhUGdWkefAk8g-c26phAhQmY-FnqCGZUphV.jpg', caption: 'Как и это тоже!' },
+                    { url: 'images/Zoopark/dpNOAgLXWAR-qo7jwb48OENLWl4XJGFbmwP2kC_uNDz8dlB2eYfE3_6wDA1rbHdtFTTTzke4Ytj4wO7KFJFNEIXM.jpg', caption: 'Ну тут очевидно что ну я' },
+                    { url: 'images/Zoopark/12331851450980.mp4', caption: 'Они тож кьюти кьюти попами сцепились', isVideo: true },
+                    { url: 'images/Zoopark/KpzyZWI5wZqrsQDr7ikouIqkeH5TwKBoPhM8E8uKxOYXd443068sean0BFLuEpU7pDOEYTmD6WgvDyIcx8zpVoAP.jpg', caption: 'Пипу нашли тогда еще хахах' },
+                    { url: 'images/Zoopark/bU1IfXHVaWIK8pkiSpzvc7M3Hv-U6wmFRPTlUL79_dQu2pPKjUatU3d60pBWILCfxxrEyo8kmdvsU73CFMg6WggB.jpg', caption: 'Эта фотка тоже одна из моих любимых!' }
+                ],
+                fan5: [ // Прогулки 
+                    { url: 'images/Progulki/9Gdxcoq-yLdSOXCU7Bo9uqyYHrejF3LIdogh9gSzInochW42so6JvkF7xT2M2YhwW0at28PjSefiG2LRBIH0-fvy.jpg', caption: 'Образ собрала мне секс' },
+                    { url: 'images/Progulki/bVWG2_65dBwv3kkQOCL6zZxvGpLmTQ3mRXWiP0Hu4NrkkJ18BIe7WVZpRz9i7vnXrOIrrqBokowLEk-KCmJ9KHeh.jpg', caption: 'Оба раза были мягко говоря замечательными!' },
+                    { url: 'images/Progulki/P-QBlZK6ELhRcKect0AiFznCl7kWtIDA-rFFH4INkMTf2fXQ1P6bKEp1S-DNx9Nh9bV1KBhHNXi1ljwavbpn6ust.jpg', caption: 'Максимка получал энергию дерева' },
+                    { url: 'images/Progulki/72j9sbmdIA0RGYiD6cAwNez2mo87kdbtdiFFq2zcRqWfwZBXe5oQk-8cyct4t0cbtGvixfVYK32Cu2sYIemV_5HI.jpg', caption: 'Очень красиво тут получилась!' },
+                    { url: 'images/Progulki/xR8QbmhmRVoZ5OLr62G0hrRNbZRbH8fQuBi0FnLKRciWKzOhaEfPmBbrqJ0QhGYJ5zAnDj3lH0hhr7-sPH6pTNYZ.jpg', caption: 'Эт когда бабулькой меня нарядила' },
+                    { url: 'images/Progulki/sJHru9P2sZKUBW6-YL14ipsYpZ_yKvXnaO4p5QcLFjsVZIadUGm91h1ANgXC041iFmmLRZAJEXqdwmj-jhCl1_IW.jpg', caption: 'Не отличить' }
+                ],
+                fan6: [ // Просто наши моменты - 8 фото
+                    { url: 'images/Prostomomenti/12329134066276.mp4', caption: 'Заснял огонек наш все равно', isVideo: true },
+                    { url: 'images/Prostomomenti/12329154447972.mp4', caption: 'Та не сосу я писю ахахх', isVideo: true },
+                    { url: 'images/Prostomomenti/12329485797988.mp4', caption: 'Это просто шедевр', isVideo: true },
+                    { url: 'images/Prostomomenti/aPfbzFuPXtg7fjjJLw9UC5Gl29kuHnh4mJfTDZezfLVAVMBWyiHL0qu8JxFUBmazeeVxCwS1ACN7j44bdpSJzO8j.jpg', caption: 'Первый день как у меня появилась Сирун' },
+                    { url: 'images/Prostomomenti/7p_QQf43kr22dik5fpR7WpeFBUFPEWs5ltWGiVf5f054qRcqfPQnhFZ2XT3KTbM6gcaGuOuVSXMxkiMkVyQWdiGd.jpg', caption: 'Вайбики имеются' },
+                    { url: 'images/Prostomomenti/aE0u4-drGV-OsetJnkCy7FEeMfOLs3rgzi54B9xuNS3U3i10E_TfzX-goRtVCwNP-vA8qXRN7Cfz35GnnE9RiZHp.jpg', caption: 'Ну тупа мы', },
+                    { url: 'images/Prostomomenti/Jm8-TuB1qm2mTjj213pi46HC8zp1JuVHtQ2VU04N-yta1j-dVt8mzAE0yRPFqSmS2nOFLRfvrweTEA6QDDzDdOFE.jpg', caption: 'Люблю очень эту фотку, все еще мои обои!!',  },
+                    { url: 'images/Prostomomenti/12331849681508.mp4', caption: 'И да откопал это...', isVideo: true }
+                ]
+            };
+
+            // Функция для увеличения фото/видео
+            function enlargeMedia(url, isVideo, caption) {
+                const overlay = document.getElementById('enlargeOverlay');
+                const content = document.getElementById('enlargeContent');
+                
+                // Очищаем предыдущее содержимое
+                content.innerHTML = '<span class="enlarge-close" id="enlargeClose">&times;</span>';
+                
+                if (isVideo) {
+                    const video = document.createElement('video');
+                    video.controls = true;
+                    video.autoplay = true;
+                    const source = document.createElement('source');
+                    source.src = url;
+                    source.type = 'video/mp4';
+                    video.appendChild(source);
+                    content.appendChild(video);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = caption || 'Увеличенное фото';
+                    content.appendChild(img);
+                }
+                
+                // Добавляем обработчик для закрытия
+                const closeBtn = content.querySelector('#enlargeClose');
+                closeBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    overlay.classList.remove('active');
+                });
+                
+                overlay.classList.add('active');
+            }
+
+            // Функция создания веера с НАСТОЯЩИМИ фотографиями и видео
+            function createFanWithRealPhotos(containerId, direction) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                const mainPhoto = container.querySelector('.main-photo');
+                if (!mainPhoto) return;
+                
+                // Получаем данные для этой карточки
+                const photos = fanImagesData[containerId] || [];
+                if (photos.length === 0) return;
+                
+                const mainRect = mainPhoto.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                
+                const centerX = mainRect.left - containerRect.left + mainRect.width / 2;
+                const centerY = mainRect.top - containerRect.top + mainRect.height / 2;
+                
+                // Параметры веера в зависимости от направления
+                let baseAngle, spreadAngle, radius;
+                
+                if (direction === 'left') {
+                    baseAngle = -30;
+                    spreadAngle = 70;
+                    radius = 170;
+                } else {
+                    baseAngle = 30;
+                    spreadAngle = 70;
+                    radius = 170;
+                }
+                
+                // Создаем фото для веера
+                const count = Math.min(photos.length, 8); // максимум 8 фото
+                
+                for (let i = 0; i < count; i++) {
+                    const photo = photos[i];
+                    const fanPhoto = document.createElement('div');
+                    fanPhoto.className = 'fan-photo';
+                    
+                    if (photo.isVideo) {
+                        // Для видео создаем превью с иконкой
+                        const preview = document.createElement('div');
+                        preview.className = 'video-preview';
+                        preview.innerHTML = '▶️';
+                        fanPhoto.appendChild(preview);
+                    } else {
+                        const img = document.createElement('img');
+                        img.src = photo.url;
+                        img.alt = photo.caption;
+                        fanPhoto.appendChild(img);
+                    }
+                    
+                    // Распределяем углы равномерно
+                    let angle;
+                    if (direction === 'left') {
+                        angle = baseAngle - (spreadAngle / 2) + (i * spreadAngle / (count - 1 || 1));
+                    } else {
+                        angle = baseAngle - (spreadAngle / 2) + (i * spreadAngle / (count - 1 || 1));
+                    }
+                    
+                    const photoRot = (Math.random() * 20 - 10).toFixed(1);
+                    const r = radius + (Math.random() * 30 - 15);
+                    
+                    const x = centerX + r * Math.sin(angle * Math.PI / 180);
+                    const y = centerY - r * Math.cos(angle * Math.PI / 180);
+                    
+                    fanPhoto.style.left = (x - 50) + 'px';
+                    fanPhoto.style.top = (y - 37) + 'px';
+                    
+                    const randomShift = 15;
+                    fanPhoto.style.left = (parseFloat(fanPhoto.style.left) + (Math.random() * randomShift - randomShift/2)) + 'px';
+                    fanPhoto.style.top = (parseFloat(fanPhoto.style.top) + (Math.random() * randomShift - randomShift/2)) + 'px';
+                    
+                    fanPhoto.style.transform = `rotate(${photoRot}deg)`;
+                    
+                    // Добавляем обработчик клика на маленькое фото
+                    fanPhoto.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const container = this.closest('.fan-container');
+                        if (!container) return;
+                        
+                        const containerId = container.id;
+                        let title = '';
+                        
+                        switch(containerId) {
+                            case 'fan1': title = 'Поездка в Ефремов'; break;
+                            case 'fan2': title = 'Поездка в Алексин'; break;
+                            case 'fan3': title = 'Поездка в Кисловодск'; break;
+                            case 'fan4': title = 'Московский зоопарк'; break;
+                            case 'fan5': title = 'Наши прогулки'; break;
+                            case 'fan6': title = 'Просто наши моменты'; break;
+                            default: title = 'Фотографии из веера';
+                        }
+                        
+                        openModal(containerId, title);
+                    });
+                    
+                    container.appendChild(fanPhoto);
+                }
+            }
+            
+            // Применяем повороты
+            function setMainRotations() {
+                const fanCards = document.querySelectorAll('.fan-card');
+                fanCards.forEach(card => {
+                    const mainRot = card.dataset.mainRot || '0deg';
+                    const labelRot = card.dataset.labelRot || '1deg';
+                    
+                    const mainPhoto = card.querySelector('.main-photo');
+                    const mainLabel = card.querySelector('.main-label');
+                    
+                    if (mainPhoto) {
+                        mainPhoto.style.setProperty('--main-rot', mainRot);
+                    }
+                    if (mainLabel) {
+                        mainLabel.style.setProperty('--label-rot', labelRot);
+                    }
+                });
+            }
+            
+            // Наблюдатель за появлением карточек
+            function observeCards() {
+                const cards = document.querySelectorAll('.fan-card');
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('revealed');
+                        }
+                    });
+                }, {
+                    threshold: 0.2
+                });
+                
+                cards.forEach(card => {
+                    observer.observe(card);
+                });
+            }
+
+            // Открытие модального окна с поддержкой видео
+            function openModal(containerId, title) {
+                const modal = document.getElementById('modalOverlay');
+                const grid = document.getElementById('photoGrid');
+                const modalTitle = document.getElementById('modalTitle');
+                
+                grid.innerHTML = '';
+                
+                const photos = fanImagesData[containerId] || [];
+                
+                if (photos.length === 0) {
+                    grid.innerHTML = '<p style="text-align:center; color:#8f4b5c;">Нет фотографий</p>';
+                } else {
+                    photos.forEach((photo) => {
+                        const item = document.createElement('div');
+                        item.className = 'grid-item';
+                        const rot = (Math.random() * 6 - 3).toFixed(1);
+                        item.style.setProperty('--rot', rot + 'deg');
+                        
+                        if (photo.isVideo) {
+                            item.innerHTML = `
+                                <video width="100%" height="120" controls>
+                                    <source src="${photo.url}" type="video/mp4">
+                                    Ваш браузер не поддерживает видео.
+                                </video>
+                                <div class="caption">${photo.caption}</div>
+                            `;
+                        } else {
+                            item.innerHTML = `
+                                <img src="${photo.url}" alt="${photo.caption}">
+                                <div class="caption">${photo.caption}</div>
+                            `;
+                        }
+                        
+                        // Добавляем обработчик клика для увеличения
+                        item.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            enlargeMedia(photo.url, photo.isVideo, photo.caption);
+                        });
+                        
+                        grid.appendChild(item);
+                    });
+                }
+                
+                modalTitle.textContent = title;
+                modal.classList.add('active');
+            }
+            
+            // Создаём веера с настоящими фото после загрузки страницы
+            setTimeout(() => {
+                const fanCards = document.querySelectorAll('.fan-card');
+                fanCards.forEach(card => {
+                    const containerId = card.querySelector('.fan-container').id;
+                    const direction = card.dataset.fanDirection || 'left';
+                    createFanWithRealPhotos(containerId, direction);
+                });
+                
+                // Обработчики клика на главные фото
+                document.querySelectorAll('.main-photo').forEach((mainPhoto) => {
+                    mainPhoto.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        
+                        const container = this.closest('.fan-container');
+                        if (!container) return;
+                        
+                        const containerId = container.id;
+                        let title = '';
+                        
+                        switch(containerId) {
+                            case 'fan1': title = 'Поездка в Ефремов'; break;
+                            case 'fan2': title = 'Поездка в Алексин'; break;
+                            case 'fan3': title = 'Поездка в Кисловодск'; break;
+                            case 'fan4': title = 'Московский зоопарк'; break;
+                            case 'fan5': title = 'Наши прогулки'; break;
+                            case 'fan6': title = 'Просто наши моменты'; break;
+                            default: title = 'Фотографии из веера';
+                        }
+                        
+                        openModal(containerId, title);
+                    });
+                });
+                
+            }, 300);
+            
+            // Закрытие модального окна
+            const modal = document.getElementById('modalOverlay');
+            const closeBtn = document.getElementById('modalClose');
+            
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+
+            // Закрытие увеличенного просмотра
+            const enlargeOverlay = document.getElementById('enlargeOverlay');
+            enlargeOverlay.addEventListener('click', function(e) {
+                if (e.target === enlargeOverlay) {
+                    enlargeOverlay.classList.remove('active');
+                }
+            });
+            
+            // Инициализация
+            setMainRotations();
+            observeCards();
+            
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.fan-card');
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const windowHeight = window.innerHeight;
+                    if (rect.top < windowHeight - 50 && rect.bottom > 0) {
+                        card.classList.add('revealed');
+                    }
+                });
+            }, 400);
+        })();
+    </script>
+</body>
+</html>

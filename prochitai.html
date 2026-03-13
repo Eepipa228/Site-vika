@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прочитай · Фон внутри</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            /* Основной внешний фон (то, что вокруг рамки) */
+            background-image: url('images/fon.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+
+            /* Центрируем прямоугольник */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            font-family: 'Georgia', 'Times New Roman', serif;
+            padding: 15px;
+        }
+
+        /* Кнопка "Назад" в стиле momenti.html */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .back-button a {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #ff69b4;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-family: Arial, sans-serif;
+        }
+
+        .back-button a:hover {
+            background-color: #ff1493;
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.5);
+        }
+
+        .back-button a:active {
+            transform: scale(0.95);
+        }
+
+        .text-box {
+            max-width: 820px;
+            width: 100%;
+            padding: 45px 55px;
+            
+            background-image: url('images/fonpisat.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            /* ГРАДИЕНТНАЯ РЕЛЬЕФНАЯ РАМКА (розовая) */
+            border: 4px solid transparent;
+            
+            /* Накладываем градиент для рамки через background-clip,
+               но чтобы он не перекрывал внутренний фон, используем маску или дополнительный слой.
+               Проще всего создать иллюзию рамки с помощью outline и box-shadow,
+               но сохранив внутренний фон видимым. 
+               Делаем так: */
+            
+            /* 1. Добавляем внутреннюю тень, которая создаст эффект градиентной окантовки 
+                  прямо поверх блока, не затрагивая фоновую картинку. */
+            box-shadow: 
+                /* внешние тени (для рельефа и отрыва от фона) */
+                -5px -5px 12px rgba(255, 255, 255, 0.7),
+                8px 8px 22px rgba(150, 40, 70, 0.3),
+                /* внутренние тени — они создадут видимость розовой рамки внутри блока */
+                inset 0px 0px 0px 6px #ffb6c1,        /* внутренняя светлая полоса */
+                inset 0px 0px 0px 12px #d94f70,       /* внутренняя тёмная полоса (перекрывается градиентом ниже) */
+                /* имитация градиента через несколько теней (получится переход) */
+                inset -3px -3px 12px rgba(220, 80, 120, 0.7),
+                inset 4px 4px 15px #fff0f7;
+            
+            /* Добавляем также outline для дополнительной внешней окантовки */
+            outline: 3px solid #ffc0cb;
+            outline-offset: 5px;
+            
+            /* Закругление */
+            border-radius: 40px 15px 40px 15px;
+            
+            /* Текст — сделаем его хорошо читаемым на любом фоне */
+            color: #2a0f1a; /* очень тёмный розовый */
+            font-size: 1.6rem;
+            line-height: 1.7;
+            text-align: center;
+            /* Добавим полупрозрачную подложку под текст для читаемости */
+            text-shadow: 
+                2px 2px 8px #fff0fa,
+                0px 0px 10px rgba(255, 240, 245, 0.9);
+            
+            position: relative;
+            transition: all 0.25s ease;
+            
+            /* Для надёжности добавим затемнение фона, если картинка слишком пёстрая.
+               Можно убрать, если фон достаточно спокойный. */
+            background-blend-mode: overlay;
+            background-color: rgba(255, 240, 245, 0.2); /* легкая вуаль */
+        }
+
+        /* Декоративные уголки (оставим, они подходят) */
+        .text-box::before,
+        .text-box::after {
+            content: '';
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            pointer-events: none;
+            border-radius: 30% 70% 20% 80% / 40% 40% 60% 60%;
+            filter: drop-shadow(2px 2px 6px #faa0b5);
+            z-index: 2;
+        }
+
+        .text-box::before {
+            top: -12px;
+            left: -12px;
+            border-top: 4px solid #ffb8c9;
+            border-left: 4px solid #ffb8c9;
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border-radius: 30px 0 0 0;
+            box-shadow: -2px -2px 10px #ffe2ec inset;
+        }
+
+        .text-box::after {
+            bottom: -12px;
+            right: -12px;
+            border-bottom: 4px solid #ffb0c3;
+            border-right: 4px solid #ffb0c3;
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border-radius: 0 0 30px 0;
+            box-shadow: 2px 2px 10px #ffe2ec inset;
+        }
+
+        /* Стили текста внутри */
+        .text-box p {
+            margin-bottom: 22px;
+            /* Добавим легкий полупрозрачный фон для текстовых абзацев, если картинка мешает */
+            background-color: rgba(255, 255, 255, 0.3);
+            padding: 5px 10px;
+            border-radius: 30px;
+            backdrop-filter: blur(2px); /* небольшое размытие фона за текстом */
+        }
+
+        .text-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .text-box h2 {
+            font-size: 2.4rem;
+            margin-bottom: 25px;
+            color: #a12f4f;
+            letter-spacing: 2px;
+            font-weight: 400;
+            border-bottom: 3px solid #ffb0c3;
+            padding-bottom: 15px;
+            display: inline-block;
+            text-shadow: 3px 3px 8px #ffe2f0;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding-left: 20px;
+            padding-right: 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 700px) {
+            .text-box {
+                padding: 30px 25px;
+                font-size: 1.3rem;
+            }
+            .text-box h2 {
+                font-size: 2rem;
+            }
+            .back-button a {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .text-box {
+                padding: 25px 18px;
+                font-size: 1.2rem;
+                border-radius: 30px 10px 30px 10px;
+            }
+            .text-box::before, .text-box::after {
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        /* Эффект при наведении */
+        .text-box:hover {
+            box-shadow: 
+                -5px -5px 18px rgba(255, 240, 245, 1),
+                10px 10px 28px rgba(160, 50, 80, 0.4),
+                inset 0px 0px 0px 6px #ffc0d0,
+                inset 0px 0px 0px 12px #d94f70,
+                inset -3px -3px 15px rgba(200, 70, 110, 0.7),
+                inset 5px 5px 20px #fff5fa;
+            transform: scale(1.01);
+        }
+    </style>
+</head>
+<body>
+    <!-- Кнопка "Назад" в стиле momenti.html -->
+    <div class="back-button">
+        <a href="#" onclick="history.back(); return false;">← Назад</a>
+    </div>
+
+    <div class="text-box">
+        <h2>🌸 Прочитай 🌸</h2>
+        <p>Теперь внутри блока — ваш фон <strong>fonpisat.jpg</strong>. Рамка осталась розовой, градиентной и рельефной, но она больше не перекрывает картинку.</p>
+        <p>Текст размещается прямо поверх изображения. Для лучшей читаемости добавлена легкая полупрозрачная подложка под буквы и небольшое размытие фона за текстом.</p>
+        <p style="font-style: italic; margin-top: 25px;">✧ Внешний фон (вокруг) — fon.jpg, внутренний — fonpisat.jpg ✧</p>
+    </div>
+
+    <!-- Важно: файлы fon.jpg и fonpisat.jpg должны лежать в папке images рядом с этим HTML -->
+</body>
+</html>

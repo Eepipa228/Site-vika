@@ -1,0 +1,372 @@
+/* style.css - основной файл стилей */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('../images/fon.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Полупрозрачный слой поверх фона */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(2px);
+    z-index: -1;
+}
+
+/* Контейнер для квадратов */
+.tab-container {
+    display: grid;
+    grid-template-columns: repeat(2, 220px);
+    gap: 40px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Стили квадрата-кнопки */
+.tab {
+    width: 220px;
+    height: 220px;
+    background: linear-gradient(to bottom, #ff1493, #ff69b4);
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 30px rgba(255, 20, 147, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    text-align: center;
+    padding: 20px;
+    text-decoration: none;
+    color: white;
+    position: relative;
+}
+
+.tab:hover {
+    transform: translateY(-15px) scale(1.05);
+    box-shadow: 0 25px 40px rgba(255, 20, 147, 0.6);
+    border-color: white;
+    background: linear-gradient(to bottom, #ff69b4, #ff1493);
+}
+
+.tab:active {
+    transform: translateY(-5px) scale(1.02);
+}
+
+.tab-icon {
+    font-size: 56px;
+    margin-bottom: 15px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    width: 80px;
+    height: 80px;
+}
+
+.tab-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.tab-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: 1px;
+}
+
+.tab-description {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.4;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    font-weight: 500;
+}
+
+/* Специальный класс для квадратика без фона */
+.tab-image-only {
+    background: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Картинка на весь квадрат */
+.tab-full-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+/* Анимация при наведении на картинку */
+.tab-image-only:hover .tab-full-image {
+    transform: scale(1.1);
+}
+
+/* Заголовок поверх картинки */
+.tab-image-only .image-title {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #ff1493;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: none;
+    backdrop-filter: blur(2px);
+    border-radius: 0 0 25px 25px;
+    z-index: 2;
+}
+
+/* Анимация для квадратика */
+.tab-animate {
+    animation: tabBounce 0.5s ease;
+}
+
+@keyframes tabBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px) scale(1.05); }
+}
+
+/* Стили для диалогового окна */
+.talk-dialog {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.talk-dialog-content {
+    position: relative;
+    background: white;
+    padding: 30px;
+    border-radius: 30px;
+    max-width: 400px;
+    width: 90%;
+    animation: dialogPop 0.4s ease;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    box-shadow: 0 20px 40px rgba(255, 20, 147, 0.3);
+    text-align: center;
+}
+
+.talk-dialog-content::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: linear-gradient(135deg, #ff1493, #ff69b4, #ff1493);
+    border-radius: 32px;
+    z-index: -1;
+    animation: gradientShift 3s ease infinite;
+    background-size: 200% 200%;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes dialogPop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes textPop {
+    0% { transform: scale(0.9); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Стили для крестика */
+.talk-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 28px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #ff1493, #ff69b4);
+    color: white;
+    font-weight: bold;
+    line-height: 1;
+    transition: background 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.talk-close-btn:hover {
+    background: linear-gradient(to bottom, #ff69b4, #ff1493);
+    transform: none;
+}
+
+.talk-close-btn:active {
+    transform: none;
+}
+
+/* Иконка в диалоге */
+.talk-dialog-icon {
+    margin-bottom: 20px;
+}
+
+.talk-dialog-icon img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #ff1493;
+    box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
+}
+
+/* Текст в диалоге */
+.talk-dialog-text {
+    font-size: 22px;
+    color: #333;
+    margin: 20px 0;
+    line-height: 1.4;
+    font-weight: 600;
+    background: linear-gradient(135deg, #ff1493, #ff69b4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+/* Кнопка в диалоге */
+.talk-dialog-button {
+    padding: 12px 30px;
+    background: linear-gradient(to bottom, #ff1493, #ff69b4);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
+    margin-top: 15px;
+    width: auto;
+    min-width: 200px;
+}
+
+.talk-dialog-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 20, 147, 0.5);
+    background: linear-gradient(to bottom, #ff69b4, #ff1493);
+}
+
+.talk-dialog-button:active {
+    transform: translateY(0);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 600px) {
+    .tab-container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        padding: 20px;
+    }
+
+    .tab {
+        width: 260px;
+        height: 260px;
+        margin: 0 auto;
+    }
+    
+    .tab-icon {
+        font-size: 64px;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .tab-title {
+        font-size: 24px;
+    }
+    
+    .talk-dialog-content {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    .talk-dialog-text {
+        font-size: 20px;
+        min-height: 70px;
+    }
+    
+    .talk-dialog-button {
+        font-size: 16px;
+        padding: 10px 25px;
+    }
+    
+    .tab-image-only .image-title {
+        font-size: 14px;
+        padding: 5px;
+    }
+}
+
+@media (max-width: 350px) {
+    .tab {
+        width: 220px;
+        height: 220px;
+    }
+    
+    .tab-icon {
+        width: 80px;
+        height: 80px;
+    }
+}

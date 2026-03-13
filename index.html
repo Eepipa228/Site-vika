@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сайт для Викульки!</title>
+    <link rel="stylesheet" href="css/Style.css">
+</head>
+<body>
+    <!-- Контейнер с четырьмя квадратами-ссылками -->
+    <div class="tab-container">
+        <!-- Вкладка 1: Игра - ссылка на igra.html -->
+        <a href="igra.html" class="tab">
+            <div class="tab-icon" style="position: relative; bottom: 70px; right: 70px;">
+                <img src="images/png-transparent-white-beige-and-pink-cat-illustration-keyboard-cat-computer-keyboard-hello-kitty-kitten-love-white-mammal-animals.png" alt="Иконка игры" style="width: 300%; height: 300%; object-fit: contain;">
+            </div>
+            <div class="tab-title" style="position: relative; top: 20px;">Если захочешь поиграть💗</div>
+        </a>
+
+        <!-- Вкладка 2: Моменты - ссылка на momenti.html -->
+        <a href="momenti.html" class="tab">
+            <div class="tab-icon" style="position: relative; bottom: 10px; right: 40px;">
+                <img src="images/channels4_profile.png" alt="Иконка моментов" style="width: 200%; height: 200%; object-fit: contain;">
+            </div>
+            <div class="tab-title" style="position: relative; top: 20px;">Наши моменты!!💖</div>
+        </a>
+
+        <!-- Вкладка 3: Прочитай - ссылка на prochitai.html -->
+        <a href="prochitai.html" class="tab">
+            <div class="tab-icon" style="position: relative; bottom: 60px; right: 40px;">
+                <img src="images/Chitaet.png" alt="Иконка чтения" style="width: 200%; height: 200%; object-fit: contain;">
+            </div>
+            <div class="tab-title" style="position: relative; top: 20px;">Прочитай!!💕</div>
+        </a>
+
+        <!-- Вкладка 4: Говорилка - только картинка без фона -->
+        <div class="tab tab-image-only" id="talkTab">
+            <img src="images/govorit.jpg" alt="Говорилка" class="tab-full-image">
+            <div class="tab-title image-title">Нажми на меня! 💬</div>
+        </div>
+    </div>
+
+    <!-- Диалоговое окно (появляется при клике) -->
+    <div class="talk-dialog" id="talkDialog">
+        <div class="talk-dialog-content">
+            <span class="talk-close-btn" id="closeTalkDialog">&times;</span>
+            <div class="talk-dialog-icon">
+                <img src="images/govorit.jpg" alt="Говорилка" style="width: 60px; height: 60px; border-radius: 50%;">
+            </div>
+            <div class="talk-dialog-text" id="dialogText">Привет, Викулька! 💕</div>
+            <button class="talk-dialog-button" id="nextMessage">Следующее</button>
+        </div>
+    </div>
+
+    <script>
+        // Элементы для диалога
+        const talkTab = document.getElementById('talkTab');
+        const talkDialog = document.getElementById('talkDialog');
+        const closeTalkDialog = document.getElementById('closeTalkDialog');
+        const dialogText = document.getElementById('dialogText');
+        const nextMessage = document.getElementById('nextMessage');
+
+        // Массив с сообщениями для Викульки
+        const messages = [
+            "Пися Попа 😎",
+            "Уже жду похода в бк 🍔",
+	    "Жду смотреть репосты 📱",
+            "Ты сегодня ну секс! 💕",
+            "Пора открывать ягермейстер 🍾",
+            "Когда будем играть в майник? 🎮",
+            "Ты у меня самая самая лучшая!💖",
+            "Обнимашки для тебя!💕",
+            "Улыбнись, булка ты моя! ☀️",
+            "Ты мой лучик солца самый главный! ☀️",
+            "Люблю тебя очень очень! 💗"
+        ];
+
+        let currentMessageIndex = 0;
+
+        // Функция показа диалога
+        function showTalkDialog() {
+            // Добавляем анимацию к квадратику
+            talkTab.classList.add('tab-animate');
+            
+            // Убираем анимацию через 500мс
+            setTimeout(() => {
+                talkTab.classList.remove('tab-animate');
+            }, 500);
+
+            // Показываем диалог
+            talkDialog.style.display = 'flex';
+            
+            // Случайное сообщение при открытии
+            currentMessageIndex = Math.floor(Math.random() * messages.length);
+            dialogText.textContent = messages[currentMessageIndex];
+        }
+
+        // Функция закрытия диалога
+        function closeTalkDialogFunc() {
+            talkDialog.style.display = 'none';
+        }
+
+        // Функция для следующего сообщения
+        function showNextMessage() {
+            currentMessageIndex = (currentMessageIndex + 1) % messages.length;
+            dialogText.textContent = messages[currentMessageIndex];
+            
+            // Добавляем анимацию текста
+            dialogText.style.animation = 'none';
+            setTimeout(() => {
+                dialogText.style.animation = 'textPop 0.3s ease';
+            }, 10);
+        }
+
+        // Обработчики событий
+        talkTab.addEventListener('click', showTalkDialog);
+        closeTalkDialog.addEventListener('click', closeTalkDialogFunc);
+        nextMessage.addEventListener('click', showNextMessage);
+
+        // Закрытие по клику вне диалога
+        window.addEventListener('click', function(event) {
+            if (event.target === talkDialog) {
+                closeTalkDialogFunc();
+            }
+        });
+
+    </script>
+</body>
+</html>
